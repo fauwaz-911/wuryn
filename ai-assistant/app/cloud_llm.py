@@ -2,7 +2,7 @@
 import openai
 import os
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = os.getenv("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")
 
 def ask_cloud(prompt: str) -> str:
     try:
