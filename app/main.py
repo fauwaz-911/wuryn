@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI
-from app.llm_router import ask
+from llm_router import ask
 from app.notifier import notify_user
 import os
 
