@@ -1,6 +1,6 @@
 
-from app.local_llm import ask_local
-from app.cloud_llm import ask_cloud
+from local_llm import ask_local
+from cloud_llm import ask_cloud
 import socket
 
 def is_connected():
