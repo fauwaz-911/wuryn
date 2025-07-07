@@ -39,4 +39,4 @@ def read_root():
 def ask_question(q: str):
     answer = ask(q)
     notify_user(f"You asked: {q}\nAssistant: {answer}")
-    return {"answer": answer"}
+    return {"answer": answer}
