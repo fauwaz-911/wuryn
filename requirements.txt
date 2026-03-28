@@ -1,6 +1,29 @@
+# Wuryn Platform — Python Dependencies
+# ─────────────────────────────────────────────────────────────────────────────
+# Install: pip install -r requirements.txt
+# Python:  3.11 or higher required
+# ─────────────────────────────────────────────────────────────────────────────
 
-openai
-requests
-fastapi
-uvicorn
-python-dotenv
+# ─── Web Framework ────────────────────────────────────────────────────────────
+fastapi==0.111.0            # Async web framework
+uvicorn[standard]==0.30.1   # ASGI server (includes websockets + httptools)
+
+# ─── HTTP Client ──────────────────────────────────────────────────────────────
+httpx==0.27.0               # Async HTTP — WhatsApp API calls
+
+# ─── AI Providers ─────────────────────────────────────────────────────────────
+groq==0.9.0                 # Groq SDK — primary AI (Llama3 8B)
+google-generativeai==0.7.2  # Google Gemini SDK — fallback AI
+
+# ─── Database ─────────────────────────────────────────────────────────────────
+supabase==2.5.0             # Supabase Python client (PostgreSQL + REST API)
+
+# ─── Authentication ───────────────────────────────────────────────────────────
+python-jose[cryptography]==3.3.0   # JWT token signing and verification
+passlib[bcrypt]==1.7.4             # Password hashing (for Phase 2 auth)
+
+# ─── Configuration ────────────────────────────────────────────────────────────
+python-dotenv==1.0.1        # Loads .env file in local development
+
+# ─── Utilities ────────────────────────────────────────────────────────────────
+python-multipart==0.0.9     # Form data parsing (needed for file uploads in Phase 3)
