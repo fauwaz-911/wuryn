@@ -85,7 +85,7 @@ async def verify_webhook(request: Request):
         )
         raise HTTPException(status_code=403, detail="Verification failed")
 
-'''@router.get("")
+"""@router.get("")
 async def verify_webhook(request: Request):
     """
     Meta Webhook Verification Endpoint.
@@ -141,7 +141,7 @@ async def verify_webhook(request: Request):
     raise HTTPException(
         status_code=403,
         detail="Webhook verification failed — token does not match any active store."
-    )'''
+    )"""
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # INCOMING MESSAGE HANDLER
