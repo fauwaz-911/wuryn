@@ -64,6 +64,40 @@ async def verify_webhook(request: Request):
     """
     Meta Webhook Verification Endpoint.
     
+    Meta requires:
+    1. Exact token match
+    2. Plain text response (content-type: text/plain)
+    3. Just the challenge number, nothing else
+    4. HTTP 200 status
+    """
+    mode      = request.query_params.get("hub.mode")
+    token     = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+
+    VERIFY_TOKEN = "wuryn_verify_2025"
+    
+    logger.info(
+        f"[WEBHOOK] Verification attempt: mode={mode}, token_match={token == VERIFY_TOKEN}, challenge={challenge}"
+    )
+    
+    if mode == "subscribe" and token == VERIFY_TOKEN and challenge:
+        logger.info(f"[WEBHOOK] ✅ Verification successful")
+        # Meta requires: plain text, just the number
+        return Response(
+            content=challenge,
+            status_code=200,
+            media_type="text/plain"
+        )
+    else:
+        logger.warning(
+            f"[WEBHOOK] ❌ Verification failed: mode={mode}, token_match={token == VERIFY_TOKEN}, challenge={challenge}"
+        )
+        raise HTTPException(status_code=403, detail="Verification failed")
+"""@router.get("")
+async def verify_webhook(request: Request):
+    """
+    Meta Webhook Verification Endpoint.
+    
     Meta sends: GET /webhook?hub.mode=subscribe&hub.verify_token=X&hub.challenge=Y
     We respond with: Y (just the number, nothing else)
     """
@@ -83,7 +117,7 @@ async def verify_webhook(request: Request):
             f"[WEBHOOK] ❌ Verification failed — "
             f"mode={mode}, token_match={token == VERIFY_TOKEN}, challenge={challenge}"
         )
-        raise HTTPException(status_code=403, detail="Verification failed")
+        raise HTTPException(status_code=403, detail="Verification failed")"""
 
 """@router.get("")
 async def verify_webhook(request: Request):
