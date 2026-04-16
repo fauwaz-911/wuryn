@@ -63,6 +63,32 @@ router = APIRouter(prefix="/webhook", tags=["WhatsApp Webhook"])
 async def verify_webhook(request: Request):
     """
     Meta Webhook Verification Endpoint.
+    
+    Meta sends: GET /webhook?hub.mode=subscribe&hub.verify_token=X&hub.challenge=Y
+    We respond with: Y (just the number, nothing else)
+    """
+    mode      = request.query_params.get("hub.mode")
+    token     = request.query_params.get("hub.verify_token")
+    challenge = request.query_params.get("hub.challenge")
+
+    # Simple static token check
+    VERIFY_TOKEN = "wuryn_verify_2025"
+    
+    if mode == "subscribe" and token == VERIFY_TOKEN and challenge:
+        logger.info(f"[WEBHOOK] ✅ Verification successful")
+        # CRITICAL: Return challenge as plain text, nothing else
+        return PlainTextResponse(challenge)
+    else:
+        logger.warning(
+            f"[WEBHOOK] ❌ Verification failed — "
+            f"mode={mode}, token_match={token == VERIFY_TOKEN}, challenge={challenge}"
+        )
+        raise HTTPException(status_code=403, detail="Verification failed")
+
+'''@router.get("")
+async def verify_webhook(request: Request):
+    """
+    Meta Webhook Verification Endpoint.
 
     Meta sends this GET request once when you register your webhook URL
     in the Meta Developer Console. It verifies that the URL is controlled
@@ -115,8 +141,7 @@ async def verify_webhook(request: Request):
     raise HTTPException(
         status_code=403,
         detail="Webhook verification failed — token does not match any active store."
-    )
-
+    )'''
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # INCOMING MESSAGE HANDLER
