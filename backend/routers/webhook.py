@@ -59,6 +59,24 @@ router = APIRouter(prefix="/webhook", tags=["WhatsApp Webhook"])
 # WEBHOOK VERIFICATION
 # ═══════════════════════════════════════════════════════════════════════════════
 
+@router.post("")
+async def receive_message(request: Request):
+    """
+    Incoming WhatsApp Message Handler.
+    """
+    logger.info("[WEBHOOK] === POST RECEIVED ===")  # ← ADD THIS LINE
+    
+    try:
+        payload = await request.json()
+    except Exception:
+        logger.warning("[WEBHOOK] Could not parse request body — returning 200 to stop retries")
+        return Response(status_code=200)
+
+    logger.info(f"[WEBHOOK] Payload received: {payload}")  # ← ADD THIS LINE
+
+    asyncio.create_task(_process_message(payload))
+    return Response(status_code=200)
+
 @router.get("")
 async def verify_webhook(request: Request):
     """
