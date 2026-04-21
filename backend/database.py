@@ -68,7 +68,7 @@ def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
         result = (
             supabase.table("stores")
             .select("id, name, slug, description, business_type, currency, wa_phone_number_id, wa_access_token, wa_verify_token, active, plan")
-            .eq("wa_phone_number_id", int(wa_phone_number_id))
+            .eq("wa_phone_number_id", str(wa_phone_number_id).strip())
             .eq("active", True)
             .single()
             .execute()
