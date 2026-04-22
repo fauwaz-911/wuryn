@@ -46,8 +46,6 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # STORE FUNCTIONS
 # Used by the webhook router to resolve which store owns an incoming message.
 # ═══════════════════════════════════════════════════════════════════════════════
-
-def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
     """
     Find a store record by its WhatsApp phone number ID.
 
@@ -64,16 +62,29 @@ def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
         Full store dict if found and active, None otherwise.
         None is also returned if the store exists but active=false (suspended).
     """
+def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
+    """
+    Find a store record by its WhatsApp phone number ID.
+    """
     try:
+        phone_id = str(wa_phone_number_id).strip()
+        
         result = (
             supabase.table("stores")
             .select("id, name, slug, description, business_type, currency, wa_phone_number_id, wa_access_token, wa_verify_token, active, plan")
-            .eq("wa_phone_number_id", str(wa_phone_number_id).strip())
+            .eq("wa_phone_number_id", phone_id)
             .eq("active", True)
-            .single()
-            .execute()
+            .execute()  # ← REMOVE .single() — use execute() directly
         )
-        return result.data
+        
+        # Return first match, or None if no matches
+        if result.data and len(result.data) > 0:
+            logger.info(f"[DB:store] Store found for phone_id={phone_id}")
+            return result.data[0]
+        else:
+            logger.warning(f"[DB:store] No store found for phone_id={phone_id}")
+            return None
+            
     except Exception as e:
         logger.error(
             f"[DB:store] get_store_by_wa_phone_id failed "
