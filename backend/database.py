@@ -54,21 +54,30 @@ def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
     try:
         phone_id = str(wa_phone_number_id).strip()
         
+        # Fetch ALL stores and filter in Python (bypass API filtering issues)
         result = (
             supabase.table("stores")
             .select("id, name, slug, description, business_type, currency, wa_phone_number_id, wa_access_token, wa_verify_token, active, plan")
-            .eq("wa_phone_number_id", phone_id)
-            .eq("active", True)
-            .execute()  # ← REMOVE .single() — use execute() directly
+            .execute()
         )
         
-        # Return first match, or None if no matches
-        if result.data and len(result.data) > 0:
-            logger.info(f"[DB:store] Store found for phone_id={phone_id}")
-            return result.data[0]
-        else:
-            logger.warning(f"[DB:store] No store found for phone_id={phone_id}")
+        if not result.data:
+            logger.warning(f"[DB:store] No stores found at all")
             return None
+        
+        # Find matching store in Python
+        for store in result.data:
+            store_phone = str(store.get("wa_phone_number_id", "")).strip()
+            store_active = store.get("active")
+            
+            logger.debug(f"[DB:store] Checking store: phone={store_phone}, active={store_active}")
+            
+            if store_phone == phone_id and store_active is True:
+                logger.info(f"[DB:store] Store found: {store.get('name')}")
+                return store
+        
+        logger.warning(f"[DB:store] No matching store found for phone_id={phone_id}")
+        return None
             
     except Exception as e:
         logger.error(
@@ -76,7 +85,6 @@ def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
             f"(phone_id={wa_phone_number_id}): {e}"
         )
         return None
-
 
 def get_store_by_slug(slug: str) -> dict | None:
     """
