@@ -46,22 +46,7 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 # STORE FUNCTIONS
 # Used by the webhook router to resolve which store owns an incoming message.
 # ═══════════════════════════════════════════════════════════════════════════════
-    """
-    Find a store record by its WhatsApp phone number ID.
 
-    This is the entry point for ALL incoming WhatsApp messages.
-    The Meta webhook payload contains the phone_number_id — we use it
-    to identify which store the message belongs to, then scope all
-    subsequent queries to that store's ID.
-
-    Args:
-        wa_phone_number_id: The Meta PHONE_NUMBER_ID string from the webhook payload.
-                            Example: "1067561433107095"
-
-    Returns:
-        Full store dict if found and active, None otherwise.
-        None is also returned if the store exists but active=false (suspended).
-    """
 def get_store_by_wa_phone_id(wa_phone_number_id: str) -> dict | None:
     """
     Find a store record by its WhatsApp phone number ID.
